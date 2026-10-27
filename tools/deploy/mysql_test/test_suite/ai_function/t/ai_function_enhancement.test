@@ -26,6 +26,13 @@ select length(ai_complete('enhance_complete', 'hello', null)) > 0 as complete_ok
 select length(ai_complete(
   'enhance_complete', ai_prompt('describe {0}', json_object('text','你好')),
   '{"temperature":0.2,"max_tokens":16}')) > 0 as complete_config_ok;
+select length(ai_complete('enhance_complete', ai_prompt('{0}/{0}/{0}', 'repeated argument'), null)) > 0 as complete_repeat_ok;
+select length(ai_complete('enhance_complete', ai_prompt('outer {0} {1}', ai_prompt('inner {0}', '世界'), json_array(1,true)), null)) > 0 as complete_nested_json_ok;
+select length(ai_complete('enhance_complete', ai_prompt('{{0}} {0}', 'escaped'), null)) > 0 as complete_escape_ok;
+--error 1210
+select ai_complete('enhance_complete', ai_prompt('{2}', 'one'), null);
+--error 1210
+select ai_complete('enhance_complete', ai_prompt('{184467440737095516160}', 'one'), null);
 
 --error 0,11118
 call DBMS_AI_SERVICE.DROP_AI_MODEL('enhance_embed');

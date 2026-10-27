@@ -22,6 +22,19 @@ select length(ai_complete(
 '{"temperature":0.2,"max_tokens":16}')) > 0 as complete_config_ok;
 complete_config_ok
 1
+select length(ai_complete('enhance_complete', ai_prompt('{0}/{0}/{0}', 'repeated argument'), null)) > 0 as complete_repeat_ok;
+complete_repeat_ok
+1
+select length(ai_complete('enhance_complete', ai_prompt('outer {0} {1}', ai_prompt('inner {0}', '世界'), json_array(1,true)), null)) > 0 as complete_nested_json_ok;
+complete_nested_json_ok
+1
+select length(ai_complete('enhance_complete', ai_prompt('{{0}} {0}', 'escaped'), null)) > 0 as complete_escape_ok;
+complete_escape_ok
+1
+select ai_complete('enhance_complete', ai_prompt('{2}', 'one'), null);
+ERROR HY000: Invalid argument
+select ai_complete('enhance_complete', ai_prompt('{184467440737095516160}', 'one'), null);
+ERROR HY000: Invalid argument
 call DBMS_AI_SERVICE.DROP_AI_MODEL('enhance_embed');
 call DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT('enhance_embed_ep');
 call DBMS_AI_SERVICE.CREATE_AI_MODEL(
